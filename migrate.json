@@ -1,9 +1,9 @@
 { 
   "version"  : "0.0.1",
   "database" : {
-    "collection" : "users",
-    "host" : "127.0.0.1",
-    "port" : 12701
+    "collection" : "ishieldz-users",
+    "host" : "localhost",
+    "port" : 27017
   },
   "backup"   : true,
   "prefix"   : "_bak",
