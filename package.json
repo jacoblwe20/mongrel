@@ -1,0 +1,41 @@
+{
+  "name": "mongrel",
+  "description": "Grunt migrate tool for MongoDB",
+  "version": "0.0.1",
+  "homepage": "https://github.com/jacoblwe20/mongrel",
+  "author": {
+    "name": "Jacob Lowe",
+    "email": "ping@jacoblowe.me",
+    "url": "jacoblowe.me"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jacoblwe20/mongrel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jacoblwe20/mongrel/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jacoblwe20/mongrel/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "grunt.js",
+  "bin": "bin/mongrel",
+  "engines": {
+    "node": "0.8.*"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "~0.3.17"
+  },
+  "dependencies": {
+    "mangos": "0.1.0"
+  },
+  "keywords": [
+    "gruntplugin"
+  ]
+}

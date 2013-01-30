@@ -1,0 +1,26 @@
+{ 
+  "version"  : "0.0.1",
+  "database" : {
+    "collection" : "users",
+    "host" : "127.0.0.1",
+    "port" : 12701
+  },
+  "backup"   : true,
+  "prefix"   : "_bak",
+  "rename"   : {
+    "name" : "firstname"
+  },
+  "require" : [
+    "Geo"
+  ],
+  "insert"   : {
+    "fullname" : "{{firstname}} {{lastname}}",
+    "center"   : "{{Geo.center(coordinates)}}"
+  },
+  "delete"   : [
+    "surname"
+  ],
+  "replace"  : {
+    "status" : null
+  }
+}
