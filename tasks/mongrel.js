@@ -56,33 +56,53 @@
     }
   };
 
-  that.Backup = function(){
-    //create a copy of a database
-    var push = function(){
-      if(that.backup.ready){
-        that.database.read({}, function(err, dataset){
-          that.grunt.log.writeln('Writing backup to ' + that.config.prefix + ':' + that.config.database.collection);
-          for(var i = 0; i < dataset.length; i += 1){
-            that.backup.create(dataset[i], function(){
-              
+  that.Done = function(){
+    // remove backups
+    that.backup.collection(function(err, collection){
+      collection.remove({}, function(err, res){
+        that.grunt.log.writeln('Removed backup ' + that.config.prefix + ':' + that.config.database.collection);
+        that.done();
+      });
+    });
+  };
+
+  that.BackupQue = function(i){
+    if(i === that.dataset.length - 1){
+      that.grunt.log.writeln('Sucessfully backuped');
+      that.Done();
+    }
+  };
+
+  that.BackupPush = function(){
+    if(that.backup.ready){
+      that.database.read({}, function(err, dataset){
+        that.dataset = dataset;
+        that.grunt.log.writeln('Writing backup to ' + that.config.prefix + ':' + that.config.database.collection);
+        for(var i = 0; i < dataset.length; i += 1){
+          (function(n){
+            that.backup.create(dataset[n], function(){
+              that.BackupQue(n)
             });
-          }
-        });
-      }else{
-        setTimeout(function(){
-          push();
-        },2000)
-      }
-    };
+          }(i));
+        }
+      });
+    }else{
+      setTimeout(function(){
+        that.BackupPush();
+      },2000)
+    }
+  };
+
+  that.Backup = function(){
 
     if(that.database.ready){  
       var backup = that.config.prefix + ':' + that.config.database.collection;
       if(that.config.database.uri){
         that.backup = new Mangos(backup, that.config.database.uri);
-        push();
+        that.BackupPush();
       }else{
         that.backup = new Mangos(backup, that.config.database.host, parseFloat(that.config.database.port));
-        push();
+        that.BackupPush();
       } 
       //that.done();
     }else{
@@ -92,9 +112,8 @@
     }
   };
 
-  //until i can get something working just finish
   that.File();
- }
+}
 
 module.exports = function(grunt) {
 
