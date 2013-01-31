@@ -33,7 +33,8 @@
     "grunt": "~0.3.17"
   },
   "dependencies": {
-    "mangos": "0.1.0"
+    "mangos": "0.1.0",
+    "dust"  : "0.3.0"
   },
   "keywords": [
     "gruntplugin"

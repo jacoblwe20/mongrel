@@ -12,8 +12,8 @@
   },
   "require"  : [],
   "insert"   : {
-    "fullname" : "{{firstname}} {{lastname}}",
-    "center"   : "{{Geo.center(coordinates)}}"
+    "fullname" : "{firstname} {lastname}",
+    "center"   : "{Geo.center(coordinates)}"
   },
   "delete"   : [
     "surname"
