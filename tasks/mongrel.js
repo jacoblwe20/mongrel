@@ -17,9 +17,21 @@
   that.file = (input[0]) ? input[0] : 'migrate.json';
   that.done = done;
   that.grunt = grunt;
+  that.current = 0
+  that.task = [];
+
+  that.Que = function(){
+    if(!(that.task.length === that.current)){
+      that.grunt.log.writeln('Running task ' + that.task[that.current]);
+      that[that.task[that.current]]();
+      that.current += 1;
+    }else{
+      that.Done();
+    }
+  };
 
   // Read the file
-  that.File = function(){
+  that.File = function(callback){
     fs.readFile(that.file, function(err, res){
       if(err){
         that.grunt.log.writeln('File not found');
@@ -30,7 +42,7 @@
         that.config = res;
         that.Database(function(){
           that.grunt.log.writeln('Connected to ' + that.config.database.collection);
-          that.Backup();
+          callback();
         });
       }
     });
@@ -66,26 +78,49 @@
     });
   };
 
+  that.insert = function(){
+    setTimeout(function(){
+      that.Que();
+    },3000);
+  };
+
+  that.delete = function(){
+    setTimeout(function(){
+      that.Que();
+    },3000);
+  };
+
+  that.replace = function(){
+    setTimeout(function(){
+      that.Que();
+    },3000);
+  };
+
   that.BackupQue = function(i){
     if(i === that.dataset.length - 1){
       that.grunt.log.writeln('Sucessfully backuped');
-      that.Done();
+      that.Que();
     }
   };
 
   that.BackupPush = function(){
     if(that.backup.ready){
-      that.database.read({}, function(err, dataset){
-        that.dataset = dataset;
-        that.grunt.log.writeln('Writing backup to ' + that.config.prefix + ':' + that.config.database.collection);
-        for(var i = 0; i < dataset.length; i += 1){
-          (function(n){
-            that.backup.create(dataset[n], function(){
-              that.BackupQue(n)
-            });
-          }(i));
-        }
-      });
+      if(that.config.backup){
+        that.database.read({}, function(err, dataset){
+          that.dataset = dataset;
+          that.grunt.log.writeln('Writing backup to ' + that.config.prefix + ':' + that.config.database.collection);
+          for(var i = 0; i < dataset.length; i += 1){
+            (function(n){
+              that.backup.create(dataset[n], function(err, res){
+                if(err) that.Done();
+                else that.BackupQue(n)
+              });
+            }(i));
+          }
+        });
+      }else{
+        that.Que();
+      }
     }else{
       setTimeout(function(){
         that.BackupPush();
@@ -104,7 +139,6 @@
         that.backup = new Mangos(backup, that.config.database.host, parseFloat(that.config.database.port));
         that.BackupPush();
       } 
-      //that.done();
     }else{
       setTimeout(function(){
         that.Backup();
@@ -112,7 +146,16 @@
     }
   };
 
-  that.File();
+  that.Init = function(){
+    that.File(function(){
+      that.Backup();
+      if(that.config.insert) that.task.push('insert');
+      if(that.config.replace) that.task.push('replace');
+      if(that.config.delete) that.task.push('delete');
+    });
+  };
+
+  that.Init();
 }
 
 module.exports = function(grunt) {
