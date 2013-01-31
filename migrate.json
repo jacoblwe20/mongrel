@@ -1,7 +1,7 @@
 { 
   "version"  : "0.0.1",
   "database" : {
-    "collection" : "ishieldz-users",
+    "collection" : "locations",
     "host" : "localhost",
     "port" : 27017
   },
@@ -10,9 +10,7 @@
   "rename"   : {
     "name" : "firstname"
   },
-  "require" : [
-    "Geo"
-  ],
+  "require"  : [],
   "insert"   : {
     "fullname" : "{{firstname}} {{lastname}}",
     "center"   : "{{Geo.center(coordinates)}}"

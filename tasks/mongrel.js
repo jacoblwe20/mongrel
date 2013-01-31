@@ -58,12 +58,33 @@
 
   that.Backup = function(){
     //create a copy of a database
-    if(that.database.ready){
-      that.database.db.copyDatabase(
-        that.config.database.collection, 
-        that.config.prefix + '.' + that.config.database.collection
-      );
-      that.done();
+    var push = function(){
+      if(that.backup.ready){
+        that.database.read({}, function(err, dataset){
+          that.grunt.log.writeln('Writing backup to ' + that.config.prefix + ':' + that.config.database.collection);
+          for(var i = 0; i < dataset.length; i += 1){
+            that.backup.create(dataset[i], function(){
+              
+            });
+          }
+        });
+      }else{
+        setTimeout(function(){
+          push();
+        },2000)
+      }
+    };
+
+    if(that.database.ready){  
+      var backup = that.config.prefix + ':' + that.config.database.collection;
+      if(that.config.database.uri){
+        that.backup = new Mangos(backup, that.config.database.uri);
+        push();
+      }else{
+        that.backup = new Mangos(backup, that.config.database.host, parseFloat(that.config.database.port));
+        push();
+      } 
+      //that.done();
     }else{
       setTimeout(function(){
         that.Backup();
