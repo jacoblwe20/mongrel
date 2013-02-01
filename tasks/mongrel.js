@@ -79,9 +79,16 @@
   };
 
   that.insert = function(){
-    setTimeout(function(){
-      that.Que();
-    },3000);
+    var done = function(i){
+      if(i === that.dataset.length - 1)
+    };
+    for(var i = 0; i < that.dataset.length; i += 1){
+      var data = that.dataset[i];
+      for(var key in that.config.insert){
+        data[key] = that.config.insert[key];
+      }
+    }
+    that.Que();
   };
 
   that.delete = function(){
@@ -168,19 +175,8 @@ module.exports = function(grunt) {
   // ==========================================================================
 
   grunt.registerTask('mongrel', 'Mongo DB modification tool', function(a) {
-
     var done = this.async();
-
     new Mongrel([a], grunt, done);
-    //grunt.log.write(grunt.helper('mongrel'));
-  });
-
-  // ==========================================================================
-  // HELPERS
-  // ==========================================================================
-
-  grunt.registerHelper('mongrel', function() {
-    return 'mongrel!!!';
   });
 
 };
