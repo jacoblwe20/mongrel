@@ -78,29 +78,14 @@
     });
   };
 
-  that.insert = function(){
-    var done = function(i){
-      if(i === that.dataset.length - 1)
-    };
+  that.update = function(){
     for(var i = 0; i < that.dataset.length; i += 1){
       var data = that.dataset[i];
-      for(var key in that.config.insert){
-        data[key] = that.config.insert[key];
+      for(var key in that.config.update){
+        data[key] = that.config.update[key];
       }
     }
     that.Que();
-  };
-
-  that.delete = function(){
-    setTimeout(function(){
-      that.Que();
-    },3000);
-  };
-
-  that.replace = function(){
-    setTimeout(function(){
-      that.Que();
-    },3000);
   };
 
   that.BackupQue = function(i){
@@ -156,9 +141,7 @@
   that.Init = function(){
     that.File(function(){
       that.Backup();
-      if(that.config.insert) that.task.push('insert');
-      if(that.config.replace) that.task.push('replace');
-      if(that.config.delete) that.task.push('delete');
+      if(that.config.update) that.task.push('update');
     });
   };
 

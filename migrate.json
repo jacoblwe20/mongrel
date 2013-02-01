@@ -11,14 +11,8 @@
     "name" : "firstname"
   },
   "require"  : [],
-  "insert"   : {
+  "update"   : {
     "fullname" : "{firstname} {lastname}",
     "center"   : "{Geo.center(coordinates)}"
-  },
-  "delete"   : [
-    "surname"
-  ],
-  "replace"  : {
-    "status" : null
   }
 }
