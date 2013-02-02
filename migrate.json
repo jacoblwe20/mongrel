@@ -6,7 +6,7 @@
     "port" : 27017
   },
   "backup"   : true,
-  "prefix"   : "_bak",
+  "prefix"   : "a",
   "rename"   : {
     "name" : "firstname"
   },
@@ -14,7 +14,7 @@
       "center" : "/requires/center.js"
   },
   "update"   : {
-    "synop" : "{title} : {info}",
     "center"   : "{!center,points}"
-  }
+  },
+  "keep"    : true
 }

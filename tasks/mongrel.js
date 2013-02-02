@@ -30,6 +30,22 @@
     that.grunt.log.writeln(str)
   };
 
+  that.Write = function(){
+    var done = function(i){
+      if(i === that.dataset.length -1){
+        that.Que();
+      }
+    };
+    for(var i = 0; i < that.dataset.length; i += 1){
+      (function(n){
+      var data = that.dataset[n];
+      that.database.update(data, function(err, res){
+        that.done(n);
+      });
+      }(i));
+    }
+  };
+
   that.Que = function(){
     if(that.current < that.task.length){
       that.current += 1;
@@ -80,12 +96,16 @@
 
   that.Done = function(){
     // remove backups
+    if(!that.config.keep){
     that.backup.collection(function(err, collection){
       collection.remove({}, function(err, res){
-        that.grunt.log.writeln('Removed backup ' + that.config.prefix + ':' + that.config.database.collection);
+        that.grunt.log.writeln('Removed backup ' + that.config.prefix + '-' + that.config.database.collection);
         that.done();
       });
     });
+    }else{
+      that.done();
+    }
   };
 
   that.execute = function(fns){
@@ -108,6 +128,9 @@
     for(var i = 0; i < that.dataset.length; i += 1){
       (function(n){
         var data = that.dataset[n];
+
+        data.id = data._id.toString();
+        delete data._id;
         for(var key in that.config.update){
           template.render(that.config.update[key], data, function(str, fns){
             if(fns) var results = that.execute(fns);
@@ -116,9 +139,6 @@
             }else{
               data[key] = str;
             }
-            
-
-            console.log(data);
             done(n);
           });
         }
@@ -145,7 +165,7 @@
       if(that.config.backup){
         that.database.read({}, function(err, dataset){
           that.dataset = dataset;
-          that.grunt.log.writeln('Writing backup to ' + that.config.prefix + ':' + that.config.database.collection);
+          that.grunt.log.writeln('Writing backup to ' + that.config.prefix + '-' + that.config.database.collection);
           for(var i = 0; i < dataset.length; i += 1){
             (function(n){
               that.backup.create(dataset[n], function(err, res){
@@ -168,7 +188,7 @@
   that.Backup = function(){
 
     if(that.database.ready){  
-      var backup = that.config.prefix + ':' + that.config.database.collection;
+      var backup = that.config.prefix + '-' + that.config.database.collection;
       if(that.config.database.uri){
         that.backup = new Mangos(backup, that.config.database.uri);
         that.BackupPush();
@@ -188,6 +208,7 @@
       that.Backup();
       that.requirments();
       if(that.config.update) that.task.push('update');
+      if(that.task.length > 0) that.task.push('Write');
     });
   };
 
