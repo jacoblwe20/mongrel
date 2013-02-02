@@ -7,7 +7,9 @@
  */
 
  var fs = require('fs'),
-    Mangos = require('mangos');
+    Mangos = require('mangos'),
+    Template = require('./template.js'),
+    template = new Template();
 
  var Mongrel = function(input, grunt, done){
   if (!(this instanceof Mongrel)) {
@@ -19,12 +21,20 @@
   that.grunt = grunt;
   that.current = 0
   that.task = [];
+  that.fns = {};
+
+  that.log = function(str){
+    // var caller_line = (new Error).stack.split("\n")[4]
+    // var index = caller_line.indexOf("at ");
+    // var clean = caller_line.slice(index+2, caller_line.length);
+    that.grunt.log.writeln(str)
+  };
 
   that.Que = function(){
-    if(!(that.task.length === that.current)){
-      that.grunt.log.writeln('Running task ' + that.task[that.current]);
-      that[that.task[that.current]]();
+    if(that.current < that.task.length){
       that.current += 1;
+      that.log(that.task[that.current - 1] + 'ing');
+      that[that.task[that.current - 1]]();
     }else{
       that.Done();
     }
@@ -78,14 +88,49 @@
     });
   };
 
-  that.update = function(){
-    for(var i = 0; i < that.dataset.length; i += 1){
-      var data = that.dataset[i];
-      for(var key in that.config.update){
-        data[key] = that.config.update[key];
-      }
+  that.execute = function(fns){
+    var result;
+    for(var i = 0; i < fns.length; i += 1){
+      var set = fns[i];
+      var name = set[0];
+      set.shift();
+      result = that.fns[name](set);
     }
-    that.Que();
+    return result;
+  };
+
+  that.update = function(){
+    var done = function(i){
+      if(i === that.dataset.length -1){
+        that.Que();
+      }
+    };
+    for(var i = 0; i < that.dataset.length; i += 1){
+      (function(n){
+        var data = that.dataset[n];
+        for(var key in that.config.update){
+          template.render(that.config.update[key], data, function(str, fns){
+            if(fns) var results = that.execute(fns);
+            if(results){
+              data[key] = results;
+            }else{
+              data[key] = str;
+            }
+            
+
+            console.log(data);
+            done(n);
+          });
+        }
+      }(i));
+    }
+  };
+
+  that.requirments = function(){
+    var requires = (that.config.require) ? that.config.require : null;
+    for(var key in requires){
+      that.fns[key] = require(__dirname + '/..' + requires[key]);
+    }
   };
 
   that.BackupQue = function(i){
@@ -141,6 +186,7 @@
   that.Init = function(){
     that.File(function(){
       that.Backup();
+      that.requirments();
       if(that.config.update) that.task.push('update');
     });
   };

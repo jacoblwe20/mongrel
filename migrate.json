@@ -10,9 +10,11 @@
   "rename"   : {
     "name" : "firstname"
   },
-  "require"  : [],
+  "require"  : {
+      "center" : "/requires/center.js"
+  },
   "update"   : {
-    "fullname" : "{firstname} {lastname}",
-    "center"   : "{Geo.center(coordinates)}"
+    "synop" : "{title} : {info}",
+    "center"   : "{!center,points}"
   }
 }
