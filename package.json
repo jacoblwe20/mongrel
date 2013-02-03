@@ -1,7 +1,7 @@
 {
   "name": "mongrel",
   "description": "Grunt migrate tool for MongoDB",
-  "version": "0.0.1",
+  "version": "0.0.7",
   "homepage": "https://github.com/jacoblwe20/mongrel",
   "author": {
     "name": "Jacob Lowe",
