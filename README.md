@@ -1,5 +1,7 @@
 # grunt-mongrel
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/jcblw/mongrel.svg)](https://greenkeeper.io/)
+
 Grunt migrate tool for MongoDB
 
 ## Getting Started
